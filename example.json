@@ -1,0 +1,17 @@
+{
+  "keyA":"string_valueA",
+  "keyB":123,
+  "keyC":{
+      "keyC1":[
+          {
+                "keyC1a":"valueC1a1",
+                "keyC1b":"valueC1b1"
+          },
+          {
+                "keyC1a":"valueC1a2",
+                "keyC1b":"valueC1b2"
+          }
+      ],
+      "keyC2":"valueC2"
+  }
+}

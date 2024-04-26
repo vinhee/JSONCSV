@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+<h1>JSON to CSV converter</h1>
+
+<button id="download">Download CSV</button>
+
+
+</body>
+<script>
+
+let example = {
+  "keyA":"string_valueA",
+  "keyB":123,
+  "keyC":{
+      "keyC1":[
+          {
+                "keyC1a":"valueC1a1",
+                "keyC1b":"valueC1b1"
+          },
+          {
+                "keyC1a":"valueC1a2",
+                "keyC1b":"valueC1b2"
+          }
+      ],
+      "keyC2":"valueC2"
+  }
+}
+
+let example2 = {
+  "books": [
+    {
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "year_published": 1925,
+      "genre": "Classic",
+      "isbn": "978-0743273565",
+      "format": "Paperback"
+    },
+    {
+      "title": "1984",
+      "author": "George Orwell",
+      "year_published": 1949,
+      "genre": "Dystopian",
+      "isbn": "978-0451524935",
+      "format": "Hardcover"
+    },
+    {
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "year_published": 1960,
+      "genre": "Fiction",
+      "isbn": "978-0060935467",
+      "format": "Paperback"
+    }
+  ]
+}
+
+
+function flattenValues(obj, prefix = '') {
+    let flattened = [];
+    for (const key in obj) {
+        if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) { //for keys containing objects only
+            const temp = flattenValues(obj[key], `${prefix}${key}_`);
+            flattened.push(...temp);
+        } 
+        else if (Array.isArray(obj[key])) { // for keys containing arrays
+            obj[key].forEach((item, index) => {
+                if(typeof item === 'object' && item !== null){ // for nested array with objects
+                    const temp = flattenValues(item, `${prefix}${key}_`);
+                    flattened.push(...temp);
+                }
+                else { // for single dimension arrays
+                    flattened.push({ key: `${prefix}${key}`, value: obj[key][index] });
+                }
+            });
+        } else { 
+            flattened.push({ key: `${prefix}${key}`, value: obj[key] });
+        }
+    }
+    return flattened;
+}
+
+function convertCSV(input) {
+    const keyVal = {};
+
+    // create an array for the keys and push associated values to the array
+    input.forEach(item => {
+        if (!keyVal[item.key]) {
+            keyVal[item.key] = [];
+        }
+        keyVal[item.key].push(item.value);
+    });
+    console.log(keyVal);
+
+    let csvContent = '';
+    const headers = Object.keys(keyVal).join(',') + '\r\n';
+    csvContent += headers;
+
+    // Creating a row for each value, if key does not have any more values, replaced by ""
+    const valuesArray = Object.values(keyVal);
+    const maxLength = valuesArray.reduce((max, arr) => Math.max(max, arr.length), 0);
+
+    for (let i = 0; i < maxLength; i++) {
+        let row = '';
+        Object.keys(keyVal).forEach(key => {
+            const value = (keyVal[key][i] !== undefined ? keyVal[key][i] : '');
+            row += `"${value}",`;
+        });
+        // Added to csv, removing ','
+        csvContent += row.slice(0, -1) + '\r\n';
+    }
+    csvContent = csvContent.replace(/\r\n$/, '');
+
+    return csvContent;
+}
+
+function downloadCSV(csvContent){
+    const blob = new Blob([csvContent], { type: 'application/csv' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.download = 'output.csv';
+    a.href = url;
+    a.style.display = 'none';
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+}
+
+document.getElementById('download').addEventListener('click', () => {
+    // jsonInput = document.getElementById('jsonText');
+    const flatten = flattenValues(example);
+    console.log(flatten);
+    const csvContent = convertCSV(flatten);
+    console.log(csvContent);
+    downloadCSV(csvContent);
+});
+
+</script>
+
+
+
+</html>
