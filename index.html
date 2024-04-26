@@ -110,7 +110,7 @@ function convertCSV(input) {
     for (let i = 0; i < maxLength; i++) {
         let row = '';
         Object.keys(keyVal).forEach(key => {
-            const value = (keyVal[key][i] !== undefined ? keyVal[key][i] : '');
+            const value = (keyVal[key][i] !== undefined ? keyVal[key][i] : ''); // checks if value is defined, else ""
             row += `"${value}",`;
         });
         // Added to csv, removing ','
