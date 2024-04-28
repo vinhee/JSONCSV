@@ -2,66 +2,30 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
 
 <body>
 
-<h1>JSON to CSV converter</h1>
+<h1 id="heading">JSON to CSV converter</h1>
 
-<button id="download">Download CSV</button>
+<div class="center-container">
+    <form method="post" enctype="multipart/form-data">
+        <label class="custom-uploader" for="file">Upload Your File</label> 
+        <input id="Jsonfile" accept=".json" name="fileToUpload" type="file" />
+    </form>
+    <div class="btnContain"> 
+        <button class="uploadBtn" id="upload" style="display:inline-block;"> Upload File </button>
+    </div>
+    <div class="btnContain"> 
+        <button id="download" class="downBtn" style="display:none;">Download CSV</button>
+    </div>
+</div>
 
 
 </body>
 <script>
-
-let example = {
-  "keyA":"string_valueA",
-  "keyB":123,
-  "keyC":{
-      "keyC1":[
-          {
-                "keyC1a":"valueC1a1",
-                "keyC1b":"valueC1b1"
-          },
-          {
-                "keyC1a":"valueC1a2",
-                "keyC1b":"valueC1b2"
-          }
-      ],
-      "keyC2":"valueC2"
-  }
-}
-
-let example2 = {
-  "books": [
-    {
-      "title": "The Great Gatsby",
-      "author": "F. Scott Fitzgerald",
-      "year_published": 1925,
-      "genre": "Classic",
-      "isbn": "978-0743273565",
-      "format": "Paperback"
-    },
-    {
-      "title": "1984",
-      "author": "George Orwell",
-      "year_published": 1949,
-      "genre": "Dystopian",
-      "isbn": "978-0451524935",
-      "format": "Hardcover"
-    },
-    {
-      "title": "To Kill a Mockingbird",
-      "author": "Harper Lee",
-      "year_published": 1960,
-      "genre": "Fiction",
-      "isbn": "978-0060935467",
-      "format": "Paperback"
-    }
-  ]
-}
-
 
 function flattenValues(obj, prefix = '') {
     let flattened = [];
@@ -73,7 +37,7 @@ function flattenValues(obj, prefix = '') {
         else if (Array.isArray(obj[key])) { // for keys containing arrays
             obj[key].forEach((item, index) => {
                 if(typeof item === 'object' && item !== null){ // for nested array with objects
-                    const temp = flattenValues(item, `${prefix}${key}_`);
+                    const temp = flattenValues(item, `${prefix}${key}`);
                     flattened.push(...temp);
                 }
                 else { // for single dimension arrays
@@ -139,17 +103,47 @@ function downloadCSV(csvContent){
     URL.revokeObjectURL(url);
 }
 
-document.getElementById('download').addEventListener('click', () => {
-    // jsonInput = document.getElementById('jsonText');
-    const flatten = flattenValues(example);
-    console.log(flatten);
-    const csvContent = convertCSV(flatten);
-    console.log(csvContent);
-    downloadCSV(csvContent);
-});
 
+document.getElementById('upload').addEventListener('click', (event) => {
+    event.preventDefault();
+    // Get the file input element
+    const fileInput = document.getElementById('Jsonfile');
+    // Ensure a file was selected
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        
+        // Read the file
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            // Parse the JSON content
+            try {
+                const jsonData = JSON.parse(event.target.result);
+                console.log(jsonData);
+                const flatten = flattenValues(jsonData); // parse makes the json file to be contained as an obj, calls only the json file data
+                console.log(flatten);
+                const csvContent = convertCSV(flatten);
+                var download = document.getElementById('download').style.display = "inline-block";
+                var upload = document.getElementById('upload').style.display = "none";
+                document.getElementById('download').addEventListener('click', () => {
+                    console.log(csvContent);
+                    downloadCSV(csvContent);
+                })
+                return csvContent;
+            } catch (e) {
+                console.error('Error parsing JSON', e);
+            }
+        };
+        reader.onerror = function (error) {
+            console.error('Error reading file', error);
+        };
+        reader.readAsText(file);
+    } else {
+        console.error('No file selected.');
+    }
+});
 </script>
 
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </html>
