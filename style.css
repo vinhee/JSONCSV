@@ -48,6 +48,7 @@ form {
   
 .uploadBtn:hover {
     background-color: lightgray;
+    color:black;
 }
 
 h1 {
@@ -89,15 +90,34 @@ h1 {
 
 .downBtn:hover {
     background-color: lightgray;
+    color:black;
 }
 
 .heading {
     margin-bottom: 15px;
 }
 
-.uploadDone {
+.testNotif {
     font-weight:bold;
     margin-top: 2px;
 }
 
-  
+.resetBtn {
+    background-color: lightslategray;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    width: 200px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 10px;
+    margin-top: 10px;
+}
+
+.resetBtn:hover {
+    background-color: lightgray;
+    color:black;
+}

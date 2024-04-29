@@ -11,13 +11,13 @@
 
 <div class="center-container">
     <h1 id="heading">JSON to CSV converter</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="form">
         <label class="uploader" for="file"><b>Upload Your File</b></label> 
         <input id="Jsonfile" accept=".json" name="fileToUpload" type="file" class="uploadFile"/>
     </form>
     <div class="btnContain" style="justify-content: center;"> 
-        <p id="Appendtext" class="uploadDone"></p>
-        <button class="uploadBtn" id="upload"> Upload File </button>
+        <p id="Appendtext" class="testNotif"></p>
+        <button id="upload" class="uploadBtn"> Upload File </button>
         <button id="download" class="downBtn">Download CSV</button>
     </div>
 </div>
@@ -30,17 +30,17 @@
 function flattenValues(obj, prefix = '') {
     let flattened = [];
 
-    if (Array.isArray(obj)) {
+    if (Array.isArray(obj)) { // for single-level array
         obj.forEach((item, index) => {
             const arrayPrefix = `${prefix}`;
             flattened.push(...flattenValues(item, arrayPrefix));
         });
     } else {
-        for (const key in obj) {
+        for (const key in obj) { // for keys containing objects
             if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) {
                 const temp = flattenValues(obj[key], `${prefix}${key}_`);
                 flattened.push(...temp);
-            } else if (Array.isArray(obj[key])) {
+            } else if (Array.isArray(obj[key])) { // for keys containing array
                 obj[key].forEach((item, arrayIndex) => {
                     if (typeof item === 'object' && item !== null) {
                         const temp = flattenValues(item, `${prefix}${key}`);
@@ -81,7 +81,7 @@ function convertCSV(input) {
     for (let i = 0; i < maxLength; i++) {
         let row = '';
         Object.keys(keyVal).forEach(key => {
-            const value = (keyVal[key][i] !== undefined ? keyVal[key][i] : ''); // checks if value is defined, else ""
+            const value = (keyVal[key][i] !== undefined ? keyVal[key][i] : ''); // checks if value is defined/not blank, else ""
             row += `"${value}",`;
         });
         // Added to csv, removing ','
