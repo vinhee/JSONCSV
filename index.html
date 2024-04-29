@@ -17,8 +17,8 @@
     </form>
     <div class="btnContain" style="justify-content: center;"> 
         <p id="Appendtext" class="uploadDone"></p>
-        <button class="uploadBtn" id="upload" style="display:inline-block;"> Upload File </button>
-        <button id="download" class="downBtn" style="display:none;">Download CSV</button>
+        <button class="uploadBtn" id="upload"> Upload File </button>
+        <button id="download" class="downBtn">Download CSV</button>
     </div>
 </div>
 
@@ -29,25 +29,32 @@
 
 function flattenValues(obj, prefix = '') {
     let flattened = [];
-    for (const key in obj) {
-        if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) { //for keys containing objects only
-            const temp = flattenValues(obj[key], `${prefix}${key}_`);
-            flattened.push(...temp);
-        } 
-        else if (Array.isArray(obj[key])) { // for keys containing arrays
-            obj[key].forEach((item, index) => {
-                if(typeof item === 'object' && item !== null){ // for nested array with objects
-                    const temp = flattenValues(item, `${prefix}${key}`);
-                    flattened.push(...temp);
-                }
-                else { // for single dimension arrays
-                    flattened.push({ key: `${prefix}${key}`, value: obj[key][index] });
-                }
-            });
-        } else { 
-            flattened.push({ key: `${prefix}${key}`, value: obj[key] });
+
+    if (Array.isArray(obj)) {
+        obj.forEach((item, index) => {
+            const arrayPrefix = `${prefix}`;
+            flattened.push(...flattenValues(item, arrayPrefix));
+        });
+    } else {
+        for (const key in obj) {
+            if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) {
+                const temp = flattenValues(obj[key], `${prefix}${key}_`);
+                flattened.push(...temp);
+            } else if (Array.isArray(obj[key])) {
+                obj[key].forEach((item, arrayIndex) => {
+                    if (typeof item === 'object' && item !== null) {
+                        const temp = flattenValues(item, `${prefix}${key}`);
+                        flattened.push(...temp);
+                    } else {
+                        flattened.push({ key: `${prefix}${key}`, value: item });
+                    }
+                });
+            } else {
+                flattened.push({ key: `${prefix}${key}`, value: obj[key] });
+            }
         }
     }
+
     return flattened;
 }
 
@@ -136,8 +143,6 @@ document.getElementById('upload').addEventListener('click', (event) => {
                 const flatten = flattenValues(jsonData); // parse makes the json file to be contained as an obj, calls only the json file data
                 console.log(flatten);
                 const csvContent = convertCSV(flatten);
-                var download = document.getElementById('download').style.display = "inline-block";
-                var upload = document.getElementById('upload').style.display = "none";
                 successUpload(textContain);
                 document.getElementById('download').addEventListener('click', () => {
                     console.log(csvContent);
