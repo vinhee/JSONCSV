@@ -3,25 +3,25 @@
 
 <head>
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 </head>
 
 <body>
 
-<h1 id="heading">JSON to CSV converter</h1>
 
 <div class="center-container">
+    <h1 id="heading">JSON to CSV converter</h1>
     <form method="post" enctype="multipart/form-data">
-        <label class="custom-uploader" for="file">Upload Your File</label> 
-        <input id="Jsonfile" accept=".json" name="fileToUpload" type="file" />
+        <label class="uploader" for="file"><b>Upload Your File</b></label> 
+        <input id="Jsonfile" accept=".json" name="fileToUpload" type="file" class="uploadFile"/>
     </form>
-    <div class="btnContain"> 
+    <div class="btnContain" style="justify-content: center;"> 
+        <p id="Appendtext" class="uploadDone"></p>
         <button class="uploadBtn" id="upload" style="display:inline-block;"> Upload File </button>
-    </div>
-    <div class="btnContain"> 
         <button id="download" class="downBtn" style="display:none;">Download CSV</button>
     </div>
 </div>
+
 
 
 </body>
@@ -103,13 +103,27 @@ function downloadCSV(csvContent){
     URL.revokeObjectURL(url);
 }
 
+function successUpload(container) {
+        var textToAdd = "JSON file uploaded successfully.";
+        var textNode = document.createTextNode(textToAdd);
+        container.appendChild(textNode);
+}
+
+function emptyFile(container) {
+        var textToAdd = "Please import a JSON file.";
+        var textNode = document.createTextNode(textToAdd);
+        container.appendChild(textNode);
+}
+
 
 document.getElementById('upload').addEventListener('click', (event) => {
     event.preventDefault();
     // Get the file input element
     const fileInput = document.getElementById('Jsonfile');
+    var textContain = document.getElementById('Appendtext');
     // Ensure a file was selected
     if (fileInput.files.length > 0) {
+        textContain.innerHTML = '';
         const file = fileInput.files[0];
         
         // Read the file
@@ -124,6 +138,7 @@ document.getElementById('upload').addEventListener('click', (event) => {
                 const csvContent = convertCSV(flatten);
                 var download = document.getElementById('download').style.display = "inline-block";
                 var upload = document.getElementById('upload').style.display = "none";
+                successUpload(textContain);
                 document.getElementById('download').addEventListener('click', () => {
                     console.log(csvContent);
                     downloadCSV(csvContent);
@@ -138,12 +153,13 @@ document.getElementById('upload').addEventListener('click', (event) => {
         };
         reader.readAsText(file);
     } else {
-        console.error('No file selected.');
+        emptyFile(textContain);
     }
 });
 </script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 
 </html>
