@@ -17,7 +17,6 @@
     </form>
     <div class="btnContain" style="justify-content: center;"> 
         <p id="Appendtext" class="testNotif"></p>
-        <button id="upload" class="uploadBtn"> Upload File </button>
         <button id="download" class="downBtn">Download CSV</button>
     </div>
 </div>
@@ -116,14 +115,7 @@ function successUpload(container) {
         container.appendChild(textNode);
 }
 
-function emptyFile(container) {
-        var textToAdd = "Please import a JSON file.";
-        var textNode = document.createTextNode(textToAdd);
-        container.appendChild(textNode);
-}
-
-
-document.getElementById('upload').addEventListener('click', (event) => {
+document.getElementById('Jsonfile').addEventListener('change', (event) => {
     event.preventDefault();
     // Get the file input element
     const fileInput = document.getElementById('Jsonfile');
