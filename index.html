@@ -127,10 +127,11 @@ document.getElementById('Jsonfile').addEventListener('change', (event) => {
         
         // Read the file
         const reader = new FileReader();
-        reader.onload = function (event) {
+        reader.readAsText(file); // read contents as text and triggers event
+        reader.onload = function (file) {
             // Parse the JSON content
             try {
-                const jsonData = JSON.parse(event.target.result);
+                const jsonData = JSON.parse(file.target.result);
                 console.log(jsonData);
                 const flatten = flattenValues(jsonData); // parse makes the json file to be contained as an obj, calls only the json file data
                 console.log(flatten);
@@ -148,9 +149,9 @@ document.getElementById('Jsonfile').addEventListener('change', (event) => {
         reader.onerror = function (error) {
             console.error('Error reading file', error);
         };
-        reader.readAsText(file);
+
     } else {
-        emptyFile(textContain);
+        console.log("No file selected");
     }
 });
 </script>
